@@ -16,4 +16,4 @@ git clone https://github.com/hls-fpga-machine-learning/sonic-models Heterogeneou
 scram b -j 10
 ```
 
-Run the `test_conf.py` under `$CMSSW_BASE/src`. The Patatrack and FACILE can be disabled by `disablePataTrack=1` and `disableFacile=1` respectively.
+Run the `test_conf.py` under `$CMSSW_BASE/src`. The Patatrack and FACILE can be disabled by `disablePataTrack=1` and `disableFacile=1` respectively. To run Patatrack on CPU, do `CUDA_VISIBLE_DEVICES= cmsRun test_conf.py` 

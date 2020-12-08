@@ -11,9 +11,14 @@ process = cms.Process('HLTX',Run3)
 
 import FWCore.ParameterSet.VarParsing as VarParsing
 opt = VarParsing.VarParsing ('analysis')
-opt.register('disablePataTrack', 0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to disable PataTrack')
+opt.register('disablePatatrack', 0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to disable Patatrack')
 opt.register('disableFacile',    0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to disable Facile')
+opt.register('PatatrackCPU',     0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run Patatrack on CPU')
 opt.parseArguments()
+
+if opt.disablePatatrack and opt.PatatrackCPU:
+    print("Patatrack module disabled. No CPU running either")
+    opt.PatatrackCPU = 0
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -99,7 +104,8 @@ process.options.numberOfStreams=cms.untracked.uint32(0)
 process.options.numberOfConcurrentLuminosityBlocks=cms.untracked.uint32(1)
 
 ## FastTime service
-jsonName = "resources_woPataTrack" if opt.disablePataTrack else "resources_PataTrack"
+jsonName = "resources_woPatatrack" if opt.disablePatatrack else "resources_Patatrack"
+jsonName += "CPU" if opt.PatatrackCPU else ""
 jsonName += "_woFacile" if opt.disableFacile else "_Facile"
 jsonName += ".json"
 process.FastTimerService = cms.Service( "FastTimerService",
@@ -142,9 +148,16 @@ process = customizeHLTforMC(process)
 ### do not use customizeHLTforPatatrack since it includes the ecal and hcal local reco on GPU
 #from HLTrigger.Configuration.customizeHLTforPatatrack import customizeHLTforPatatrack
 #process = customizeHLTforPatatrack(process)
-if not opt.disablePataTrack:
-    print("include PataTrack Reconstruction")
-    from HLTrigger.Configuration.customizeHLTforPatatrack import customiseCommon, customisePixelLocalReconstruction, customisePixelTrackReconstruction
+if not opt.disablePatatrack:
+    print("include Patatrack Reconstruction")
+    from HLTrigger.Configuration.customizeHLTforPatatrack import forceGpuOffload, customiseCommon, customisePixelLocalReconstruction, customisePixelTrackReconstruction
+    if opt.PatatrackCPU:
+        print("Run Patatrack on CPU")
+        import os
+        # there might be better ways to do this
+        os.environ["CUDA_VISIBLE_DEVICES"] = "" 
+        # forceGpuOffload will make Patatrack code running on CPU, but 100MB memory on GPU will be reserved by cmsRun
+        #forceGpuOffload(False)
     process = customiseCommon(process)
     process = customisePixelLocalReconstruction(process)
     process = customisePixelTrackReconstruction(process)

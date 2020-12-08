@@ -1,4 +1,4 @@
-# steps to run PataTrack and FACILE on the same GPU
+# steps to run Patatrack and FACILE on the same GPU
 ```
 cmsrel CMSSW_11_2_0_pre10_Patatrack
 cd CMSSW_11_2_0_pre10_Patatrack/src/
@@ -15,4 +15,4 @@ git clone https://github.com/hls-fpga-machine-learning/sonic-models Heterogeneou
 scram b -j 10
 ```
 
-Run the `test_conf.py` under `$CMSSW_BASE/src`. The Patatrack and FACILE can be disabled by `disablePataTrack=1` and `disableFacile=1` respectively. To run Patatrack on CPU, do `CUDA_VISIBLE_DEVICES= cmsRun test_conf.py` 
+Run the `test_conf.py` under `$CMSSW_BASE/src`. The Patatrack and FACILE can be disabled by `disablePatatrack=1` and `disableFacile=1` respectively. To run Patatrack on CPU, do `cmsRun test_conf.py PatatrackCPU=1`

@@ -15,6 +15,14 @@ git clone https://github.com/hls-fpga-machine-learning/sonic-models Heterogeneou
 scram b -j 10
 ```
 
+The triton server can be started by
+```
+cd HeterogeneousCore/SonicTriton/test
+./triton start
+cd $CMSSW_BASE/src/
+```
+On ailab03, the GPU server is already running so this can be skipped.
+
 Run the `test_conf.py` under `$CMSSW_BASE/src`. The Patatrack and FACILE can be disabled by `disablePatatrack=1` and `disableFacile=1` respectively. To run Patatrack on CPU, do `cmsRun test_conf.py PatatrackCPU=1`.
 
 The script will produce the json files documenting the HLT timing information using the [`FastTimerService`](https://github.com/cms-sw/cmssw/blob/CMSSW_11_2_Patatrack_X/HLTrigger/Timer/plugins/FastTimerService.cc). The json file can be analyzed with `check_time.py` by running:

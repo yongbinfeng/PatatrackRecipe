@@ -6,6 +6,7 @@ parser = ArgumentParser()
 parser.add_argument('--disablePatatrack', dest='disablePatatrack', default=False, help='disable Patatrack in the running')
 parser.add_argument('--disableFacile',    dest='disableFacile',    default=False, help='disable Facile in the running')
 parser.add_argument('--PatatrackCPU',     dest='PatatrackCPU',     default=False, help='run Patatrack recipe with the CPU')
+parser.add_argument('--HCALGPU',          dest='HCALGPU',          default=False, help='run HCAL GPU reco')
 
 opt = parser.parse_args()
 
@@ -13,9 +14,14 @@ if opt.disablePatatrack and opt.PatatrackCPU:
     print("Patatrack module disabled. No CPU running either")
     opt.PatatrackCPU = 0
 
+if not opt.disableFacile and opt.HCALGPU:
+    print("Facile enabled. NO HCAL MAHI GPU reconstruction")
+    opt.HCALGPU = 0
+
 jsonName = "resources_woPatatrack" if opt.disablePatatrack else "resources_Patatrack"
 jsonName += "CPU" if opt.PatatrackCPU else ""
 jsonName += "_woFacile" if opt.disableFacile else "_Facile"
+jsonName += "_HCALGPU" if opt.HCALGPU else ""
 jsonName += ".json"
 
 #timeName = "time_thread"
@@ -124,11 +130,17 @@ def Modules_for_Patatrack_or_Equivalent(with_patatrack=True):
     else:
         return modules_patatrack_equivalent
 
-def Modules_for_FACILE_or_Equivalent(with_facile=True):
+def Modules_for_FACILE_or_Equivalent(with_facile=True, with_HCALGPU=False):
     ## FACILE
     hltHbhereco = [
         "hltHbherecopre",
-        "hltHbhereco"
+        "hltHbhereco",
+    ]
+    hltHbhereco_hcalgpu = [
+        "hltHcalDigisGPU",
+        "hltHbherecoGPU",
+        "hltHbherecoFromGPU",
+        "hltHbhereco",
     ]
     hltHbhereco_nofacile = [
         "hltHbhereco"
@@ -136,15 +148,18 @@ def Modules_for_FACILE_or_Equivalent(with_facile=True):
 
     if with_facile:
         return hltHbhereco
+    elif with_HCALGPU:
+        return hltHbhereco_hcalgpu
     else:
         return hltHbhereco_nofacile
 
 
 withPatatrack = not opt.disablePatatrack
 withFacile   = not opt.disableFacile
+withHCALGPU = opt.HCALGPU
 
 time_patatrack = sum(time_real_modules[mod] for mod in Modules_for_Patatrack_or_Equivalent(withPatatrack))
-time_facile = sum(time_real_modules[mod] for mod in Modules_for_FACILE_or_Equivalent(withFacile))
+time_facile = sum(time_real_modules[mod] for mod in Modules_for_FACILE_or_Equivalent(withFacile, withHCALGPU))
 
 time_other = time_real_modules["other"]  
 

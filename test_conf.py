@@ -14,11 +14,16 @@ opt = VarParsing.VarParsing ('analysis')
 opt.register('disablePatatrack', 0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to disable Patatrack')
 opt.register('disableFacile',    0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to disable Facile')
 opt.register('PatatrackCPU',     0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run Patatrack on CPU')
+opt.register('HCALGPU',          0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run HCAL GPU reco')
 opt.parseArguments()
 
 if opt.disablePatatrack and opt.PatatrackCPU:
     print("Patatrack module disabled. No CPU running either")
     opt.PatatrackCPU = 0
+
+if not opt.disableFacile and opt.HCALGPU:
+    print("Facile enabled. NO HCAL MAHI GPU reconstruction")
+    opt.HCALGPU = 0
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -116,6 +121,7 @@ process.options.numberOfConcurrentLuminosityBlocks=cms.untracked.uint32(1)
 jsonName = "resources_woPatatrack" if opt.disablePatatrack else "resources_Patatrack"
 jsonName += "CPU" if opt.PatatrackCPU else ""
 jsonName += "_woFacile" if opt.disableFacile else "_Facile"
+jsonName += "_HCALGPU" if opt.HCALGPU else ""
 jsonName += ".json"
 process.FastTimerService = cms.Service( "FastTimerService",
     dqmPath = cms.untracked.string( "HLT/TimerService" ),
@@ -128,7 +134,7 @@ process.FastTimerService = cms.Service( "FastTimerService",
     dqmModuleMemoryRange = cms.untracked.double( 100000.0 ),
     dqmModuleMemoryResolution = cms.untracked.double( 500.0 ),
     dqmMemoryResolution = cms.untracked.double( 5000.0 ),
-    enableDQMbyLumiSection = cms.untracked.bool( True ),
+    enableDQMbyLumiSection = cms.untracked.bool( False ),
     dqmPathTimeResolution = cms.untracked.double( 0.5 ),
     printEventSummary = cms.untracked.bool( False ),
     dqmPathTimeRange = cms.untracked.double( 100.0 ),
@@ -188,6 +194,19 @@ if not opt.disableFacile:
     process.HLTStoppedHSCPLocalHcalReco = cms.Sequence( process.hltHcalDigis + process.hltHbherecopre + process.hltHbhereco)
     process.hltHbhereco.Client.verbose = False
 
+# HCAL MAHI GPU code
+if opt.HCALGPU:
+    # opt.disableFacile has to be true (FACILE disabled), then MAHI GPU code can run
+    print("include HCAL GPU Reconstruction")
+    from HLTrigger.Configuration.customizeHLTforPatatrack import customiseHcalLocalReconstruction
+
+    if 'Status_OnGPU' not in process.__dict__:
+        print("import Common config")
+        from HLTrigger.Configuration.customizeHLTforPatatrack import customiseCommon
+        process = customiseCommon(process)
+
+    process = customiseHcalLocalReconstruction(process)
+
 # End of customisation functions
 
 # log
@@ -197,6 +216,7 @@ process.MessageLogger.categories.append('L1GtTrigReport')
 process.MessageLogger.categories.append('L1TGlobalSummary')
 process.MessageLogger.categories.append('HLTrigReport')
 process.MessageLogger.categories.append('FastReport')
+process.MessageLogger.suppressWarning = cms.untracked.vstring('hltL3NoFiltersNoVtxMuonsOIState', 'hltL3NoFiltersNoVtxMuonsOIHit', 'hltEgammaGsfTracks', 'hltEcalRecHit') 
 
 
 # Customisation from command line

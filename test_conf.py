@@ -33,13 +33,22 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000),
-    output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
+    input = cms.untracked.int32( 10000 )
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/FED4709C-569E-0A42-8FF7-20E565ABE999.root'),
+    fileNames = cms.untracked.vstring(
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/18477778-2F96-A24A-89F8-BAB9D113611C.root',
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/5087AFB6-88B6-3F40-A9B3-D705E0D3B095.root',
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/5E8F91BB-085F-8E4E-869F-65F120E7E7B5.root',
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/5EC19BD5-CD0C-EB48-AF3D-1E25250D167A.root',
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/6F8EDE6D-EE14-044B-8628-08385B6AC103.root',
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/773FAC39-3A0F-1D44-9567-C5837ADA6244.root',
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/AD1F232C-9D23-BC48-BB4B-DF3D73CD5BA3.root',
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/D05C202C-CCFB-584F-AC7F-CA1ED0197B5E.root',
+        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre6_ROOT622/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/112X_mcRun3_2021_realistic_v7-v1/FED4709C-569E-0A42-8FF7-20E565ABE999.root',
+    ),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -182,7 +191,7 @@ if not opt.disableFacile:
 # End of customisation functions
 
 # log
-process.MessageLogger.cerr.FwkReport.reportEvery = 50000
+process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.MessageLogger.categories.append('TriggerSummaryProducerAOD')
 process.MessageLogger.categories.append('L1GtTrigReport')
 process.MessageLogger.categories.append('L1TGlobalSummary')

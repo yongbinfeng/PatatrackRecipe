@@ -7,6 +7,8 @@ parser.add_argument('--disablePatatrack', dest='disablePatatrack', default=False
 parser.add_argument('--disableFacile',    dest='disableFacile',    default=False, help='disable Facile in the running')
 parser.add_argument('--PatatrackCPU',     dest='PatatrackCPU',     default=False, help='run Patatrack recipe with the CPU')
 parser.add_argument('--HCALGPU',          dest='HCALGPU',          default=False, help='run HCAL GPU reco')
+parser.add_argument('--FacileCPU',        dest='FacileCPU',        default=False, help='run Facile on CPU server')
+parser.add_argument('--printout',         dest='printout',         default=False, help='print out the FACILE breakdowns')
 
 opt = parser.parse_args()
 
@@ -18,9 +20,14 @@ if not opt.disableFacile and opt.HCALGPU:
     print("Facile enabled. NO HCAL MAHI GPU reconstruction")
     opt.HCALGPU = 0
 
+if opt.disableFacile and opt.FacileCPU:
+    print("Facile disabled. Skip Facile CPU")
+    opt.FacileCPU = 0
+
 jsonName = "resources_woPatatrack" if opt.disablePatatrack else "resources_Patatrack"
 jsonName += "CPU" if opt.PatatrackCPU else ""
 jsonName += "_woFacile" if opt.disableFacile else "_Facile"
+jsonName += "CPU" if opt.FacileCPU else ""
 jsonName += "_HCALGPU" if opt.HCALGPU else ""
 jsonName += ".json"
 
@@ -153,6 +160,12 @@ def Modules_for_FACILE_or_Equivalent(with_facile=True, with_HCALGPU=False):
     else:
         return hltHbhereco_nofacile
 
+def printOut(list_to_print):
+    print("\n")
+    for mod in list_to_print:
+        print "{}\t{}".format(mod, time_real_modules[mod]/nevents)
+    print("\n")
+
 
 withPatatrack = not opt.disablePatatrack
 withFacile   = not opt.disableFacile
@@ -171,3 +184,6 @@ print("Other time:\t%.2f"    %(time_other/nevents    ))
 print("HLT time:\t%.2f"      %(time_HLT/nevents      ))
 print("Patatrack time:\t%.2f"%(time_patatrack/nevents))
 print("facile time:\t%.2f"   %(time_facile/nevents   ))
+
+if opt.printout:
+    printOut(["hltHcalDigis"] + Modules_for_FACILE_or_Equivalent(withFacile, withHCALGPU))

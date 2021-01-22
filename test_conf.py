@@ -15,6 +15,7 @@ opt.register('disablePatatrack', 0, VarParsing.VarParsing.multiplicity.singleton
 opt.register('disableFacile',    0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to disable Facile')
 opt.register('PatatrackCPU',     0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run Patatrack on CPU')
 opt.register('HCALGPU',          0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run HCAL GPU reco')
+opt.register('FacileCPU',        0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run Facile on CPU server')
 opt.parseArguments()
 
 if opt.disablePatatrack and opt.PatatrackCPU:
@@ -24,6 +25,10 @@ if opt.disablePatatrack and opt.PatatrackCPU:
 if not opt.disableFacile and opt.HCALGPU:
     print("Facile enabled. NO HCAL MAHI GPU reconstruction")
     opt.HCALGPU = 0
+
+if opt.disableFacile and opt.FacileCPU:
+    print("Facile disabled. Skip Facile CPU")
+    opt.FacileCPU = 0
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -53,6 +58,12 @@ process.source = cms.Source("PoolSource",
         'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/dcf17626-f470-4472-8cd2-caedde15594c.root',
         'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/22a6eb3d-e3a1-44a6-910f-7a0f0fb19820.root',
         'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/b1c395c9-6d2a-4d99-b119-3666922406a9.root'
+        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941000.root',
+        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941001.root',
+        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941002.root',
+        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941003.root',
+        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941004.root',
+        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941005.root'
     ),
     secondaryFileNames = cms.untracked.vstring()
 )
@@ -121,6 +132,7 @@ process.options.numberOfConcurrentLuminosityBlocks=cms.untracked.uint32(1)
 jsonName = "resources_woPatatrack" if opt.disablePatatrack else "resources_Patatrack"
 jsonName += "CPU" if opt.PatatrackCPU else ""
 jsonName += "_woFacile" if opt.disableFacile else "_Facile"
+jsonName += "CPU" if opt.FacileCPU else ""
 jsonName += "_HCALGPU" if opt.HCALGPU else ""
 jsonName += ".json"
 process.FastTimerService = cms.Service( "FastTimerService",
@@ -189,6 +201,10 @@ if not opt.disableFacile:
     process.hltHbhereco = sonic_hbheprereco.clone(
         ChannelInfoName = cms.InputTag("hltHbherecopre")
     )
+    
+    if opt.FacileCPU:
+        print("Running Facile on CPU server")
+        process.hltHbhereco.Client.port = cms.untracked.uint32(8021)
 
     process.HLTDoLocalHcalSequence = cms.Sequence( process.hltHcalDigis + process.hltHbherecopre + process.hltHbhereco + process.hltHfprereco + process.hltHfreco + process.hltHoreco )
     process.HLTStoppedHSCPLocalHcalReco = cms.Sequence( process.hltHcalDigis + process.hltHbherecopre + process.hltHbhereco)
@@ -211,12 +227,47 @@ if opt.HCALGPU:
 
 # log
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
+process.MessageLogger.suppressWarning = cms.untracked.vstring( 
+    'hltOnlineBeamSpot',
+    'hltCtf3HitL1SeededWithMaterialTracks',
+    'hltL3MuonsOIState',
+    'hltPixelTracksForHighMult',
+    'hltHITPixelTracksHE',
+    'hltHITPixelTracksHB',
+    'hltCtfL1SeededWithMaterialTracks',
+    'hltRegionalTracksForL3MuonIsolation',
+    'hltSiPixelClusters',
+    'hltActivityStartUpElectronPixelSeeds',
+    'hltLightPFTracks',
+    'hltPixelVertices3DbbPhi',
+    'hltL3MuonsIOHit',
+    'hltPixelTracks',
+    'hltSiPixelDigis',
+    'hltL3MuonsOIHit',
+    'hltL1SeededElectronGsfTracks',
+    'hltL1SeededStartUpElectronPixelSeeds',
+    'hltBLifetimeRegionalCtfWithMaterialTracksbbPhiL1FastJetFastPV',
+    'hltL3NoFiltersTkTracksFromL2IOHitNoVtx',
+    'hltCtfActivityWithMaterialTracks',
+    'hltL3NoFiltersNoVtxMuonsOIState',
+    'hltL3NoFiltersNoVtxMuonsOIHit',
+    'hltEgammaGsfTracks',
+    'hltEcalRecHit',
+)
+process.MessageLogger.suppressError = cms.untracked.vstring( 
+    'hltOnlineBeamSpot',
+    'hltL3MuonCandidates',
+    'hltL3TkTracksFromL2OIState',
+    'hltPFJetCtfWithMaterialTracks',
+    'hltL3TkTracksFromL2IOHit',
+    'hltL3TkTracksFromL2OIHit'
+)
 process.MessageLogger.categories.append('TriggerSummaryProducerAOD')
 process.MessageLogger.categories.append('L1GtTrigReport')
 process.MessageLogger.categories.append('L1TGlobalSummary')
 process.MessageLogger.categories.append('HLTrigReport')
 process.MessageLogger.categories.append('FastReport')
-process.MessageLogger.suppressWarning = cms.untracked.vstring('hltL3NoFiltersNoVtxMuonsOIState', 'hltL3NoFiltersNoVtxMuonsOIHit', 'hltEgammaGsfTracks', 'hltEcalRecHit') 
+#process.MessageLogger.suppressWarning = cms.untracked.vstring('hltL3NoFiltersNoVtxMuonsOIState', 'hltL3NoFiltersNoVtxMuonsOIHit', 'hltEgammaGsfTracks', 'hltEcalRecHit') 
 
 
 # Customisation from command line

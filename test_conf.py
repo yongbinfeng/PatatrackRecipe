@@ -43,7 +43,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32( 10000 )
+    input = cms.untracked.int32( 200 )
 )
 
 # Input source
@@ -52,12 +52,12 @@ process.source = cms.Source("PoolSource",
         'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/f6888c6e-1fe6-413e-b2b5-e54ff3a4fe2b.root',
         'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/af0cb760-6b10-4274-aacf-090ce44a6d77.root',
         'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/ea040265-e2fe-4bab-8986-7d36e71bca36.root',
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/d4b65a93-a40a-4a65-be40-f873498a36a3.root',
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/64b3758c-5896-4839-ad75-d401b54e6a7d.root',
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/020c2ee5-7d1a-41ad-bae1-4e3f34a0ddfb.root',
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/dcf17626-f470-4472-8cd2-caedde15594c.root',
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/22a6eb3d-e3a1-44a6-910f-7a0f0fb19820.root',
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/b1c395c9-6d2a-4d99-b119-3666922406a9.root'
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/d4b65a93-a40a-4a65-be40-f873498a36a3.root',
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/64b3758c-5896-4839-ad75-d401b54e6a7d.root',
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/020c2ee5-7d1a-41ad-bae1-4e3f34a0ddfb.root',
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/dcf17626-f470-4472-8cd2-caedde15594c.root',
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/22a6eb3d-e3a1-44a6-910f-7a0f0fb19820.root',
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/b1c395c9-6d2a-4d99-b119-3666922406a9.root'
         #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941000.root',
         #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941001.root',
         #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941002.root',
@@ -138,15 +138,15 @@ jsonName += ".json"
 process.FastTimerService = cms.Service( "FastTimerService",
     dqmPath = cms.untracked.string( "HLT/TimerService" ),
     dqmModuleTimeRange = cms.untracked.double( 40.0 ),
-    enableDQMbyPath = cms.untracked.bool( False ),
+    enableDQMbyPath = cms.untracked.bool( True ),
     writeJSONSummary = cms.untracked.bool( True ),
     dqmPathMemoryResolution = cms.untracked.double( 5000.0 ),
     enableDQM = cms.untracked.bool( True ),
-    enableDQMbyModule = cms.untracked.bool( False ),
+    enableDQMbyModule = cms.untracked.bool( True ),
     dqmModuleMemoryRange = cms.untracked.double( 100000.0 ),
     dqmModuleMemoryResolution = cms.untracked.double( 500.0 ),
     dqmMemoryResolution = cms.untracked.double( 5000.0 ),
-    enableDQMbyLumiSection = cms.untracked.bool( False ),
+    enableDQMbyLumiSection = cms.untracked.bool( True ),
     dqmPathTimeResolution = cms.untracked.double( 0.5 ),
     printEventSummary = cms.untracked.bool( False ),
     dqmPathTimeRange = cms.untracked.double( 100.0 ),
@@ -161,6 +161,17 @@ process.FastTimerService = cms.Service( "FastTimerService",
     dqmModuleTimeResolution = cms.untracked.double( 0.2 ),
     printJobSummary = cms.untracked.bool( True ),
     jsonFileName = cms.untracked.string( jsonName )
+)
+
+process.ThroughputService = cms.Service( "ThroughputService",
+    dqmPath = cms.untracked.string( "HLT/Throughput" ),
+    eventRange = cms.untracked.uint32( 10000 ),
+    timeRange = cms.untracked.double( 60000.0 ),
+    printEventSummary = cms.untracked.bool( True ),
+    eventResolution = cms.untracked.uint32( 100 ),
+    enableDQM = cms.untracked.bool( True ),
+    dqmPathByProcesses = cms.untracked.bool( True ),
+    timeResolution = cms.untracked.double( 5.828 )
 )
 
 # customisation of the process.
@@ -267,6 +278,12 @@ process.MessageLogger.categories.append('L1GtTrigReport')
 process.MessageLogger.categories.append('L1TGlobalSummary')
 process.MessageLogger.categories.append('HLTrigReport')
 process.MessageLogger.categories.append('FastReport')
+process.MessageLogger.categories.append('ThroughputService')
+process.MessageLogger.cerr.ThroughputService = cms.untracked.PSet(
+    limit = cms.untracked.int32(10000000),
+    reportEvery = cms.untracked.int32(1)
+)
+
 #process.MessageLogger.suppressWarning = cms.untracked.vstring('hltL3NoFiltersNoVtxMuonsOIState', 'hltL3NoFiltersNoVtxMuonsOIHit', 'hltEgammaGsfTracks', 'hltEcalRecHit') 
 
 

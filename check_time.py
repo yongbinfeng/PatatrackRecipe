@@ -4,11 +4,9 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 
 parser.add_argument('--disablePatatrack', dest='disablePatatrack', default=False, help='disable Patatrack in the running')
-parser.add_argument('--disableFacile',    dest='disableFacile',    default=False, help='disable Facile in the running')
 parser.add_argument('--PatatrackCPU',     dest='PatatrackCPU',     default=False, help='run Patatrack recipe with the CPU')
 parser.add_argument('--HCALGPU',          dest='HCALGPU',          default=False, help='run HCAL GPU reco')
-parser.add_argument('--FacileCPU',        dest='FacileCPU',        default=False, help='run Facile on CPU server')
-parser.add_argument('--printout',         dest='printout',         default=False, help='print out the FACILE breakdowns')
+parser.add_argument('--printout',         dest='printout',         default=False, help='print out the breakdowns')
 
 opt = parser.parse_args()
 
@@ -16,18 +14,8 @@ if opt.disablePatatrack and opt.PatatrackCPU:
     print("Patatrack module disabled. No CPU running either")
     opt.PatatrackCPU = 0
 
-if not opt.disableFacile and opt.HCALGPU:
-    print("Facile enabled. NO HCAL MAHI GPU reconstruction")
-    opt.HCALGPU = 0
-
-if opt.disableFacile and opt.FacileCPU:
-    print("Facile disabled. Skip Facile CPU")
-    opt.FacileCPU = 0
-
 jsonName = "resources_woPatatrack" if opt.disablePatatrack else "resources_Patatrack"
 jsonName += "CPU" if opt.PatatrackCPU else ""
-jsonName += "_woFacile" if opt.disableFacile else "_Facile"
-jsonName += "CPU" if opt.FacileCPU else ""
 jsonName += "_HCALGPU" if opt.HCALGPU else ""
 jsonName += ".json"
 
@@ -168,7 +156,7 @@ def printOut(list_to_print):
 
 
 withPatatrack = not opt.disablePatatrack
-withFacile   = not opt.disableFacile
+withFacile   = False
 withHCALGPU = opt.HCALGPU
 
 time_patatrack = sum(time_real_modules[mod] for mod in Modules_for_Patatrack_or_Equivalent(withPatatrack))

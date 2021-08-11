@@ -12,23 +12,13 @@ process = cms.Process('HLTX',Run3)
 import FWCore.ParameterSet.VarParsing as VarParsing
 opt = VarParsing.VarParsing ('analysis')
 opt.register('disablePatatrack', 0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to disable Patatrack')
-opt.register('disableFacile',    0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to disable Facile')
 opt.register('PatatrackCPU',     0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run Patatrack on CPU')
-opt.register('HCALGPU',          0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run HCAL GPU reco')
-opt.register('FacileCPU',        0, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run Facile on CPU server')
+opt.register('HCALGPU',          1, VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.bool, 'Set to 1 to run HCAL GPU reco')
 opt.parseArguments()
 
 if opt.disablePatatrack and opt.PatatrackCPU:
     print("Patatrack module disabled. No CPU running either")
     opt.PatatrackCPU = 0
-
-if not opt.disableFacile and opt.HCALGPU:
-    print("Facile enabled. NO HCAL MAHI GPU reconstruction")
-    opt.HCALGPU = 0
-
-if opt.disableFacile and opt.FacileCPU:
-    print("Facile disabled. Skip Facile CPU")
-    opt.FacileCPU = 0
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -43,26 +33,16 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32( 200 )
+    input = cms.untracked.int32( 20 )
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/f6888c6e-1fe6-413e-b2b5-e54ff3a4fe2b.root',
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/af0cb760-6b10-4274-aacf-090ce44a6d77.root',
-        'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/ea040265-e2fe-4bab-8986-7d36e71bca36.root',
-        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/d4b65a93-a40a-4a65-be40-f873498a36a3.root',
-        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/64b3758c-5896-4839-ad75-d401b54e6a7d.root',
-        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/020c2ee5-7d1a-41ad-bae1-4e3f34a0ddfb.root',
-        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/dcf17626-f470-4472-8cd2-caedde15594c.root',
-        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/22a6eb3d-e3a1-44a6-910f-7a0f0fb19820.root',
-        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/b1c395c9-6d2a-4d99-b119-3666922406a9.root'
-        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941000.root',
-        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941001.root',
-        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941002.root',
-        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941003.root',
-        #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941004.root',
+        'file:/storage/local/data2/yfeng/relvar/020c2ee5-7d1a-41ad-bae1-4e3f34a0ddfb.root'
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/f6888c6e-1fe6-413e-b2b5-e54ff3a4fe2b.root',
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/af0cb760-6b10-4274-aacf-090ce44a6d77.root',
+        #'file:/storage/local/data1/relval/CMSSW_11_2_0_pre9/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_112X_mcRun3_2021_realistic_v11-v1/00000/ea040265-e2fe-4bab-8986-7d36e71bca36.root',
         #'file:/storage/local/data1/relval/EphemeralHLTPhysics/EphemeralHLTPhysics_PU48-49_319941005.root'
     ),
     secondaryFileNames = cms.untracked.vstring()
@@ -131,8 +111,6 @@ process.options.numberOfConcurrentLuminosityBlocks=cms.untracked.uint32(1)
 ## FastTime service
 jsonName = "resources_woPatatrack" if opt.disablePatatrack else "resources_Patatrack"
 jsonName += "CPU" if opt.PatatrackCPU else ""
-jsonName += "_woFacile" if opt.disableFacile else "_Facile"
-jsonName += "CPU" if opt.FacileCPU else ""
 jsonName += "_HCALGPU" if opt.HCALGPU else ""
 jsonName += ".json"
 process.FastTimerService = cms.Service( "FastTimerService",
@@ -200,30 +178,9 @@ if not opt.disablePatatrack:
     process = customisePixelLocalReconstruction(process)
     process = customisePixelTrackReconstruction(process)
 
-## FACILE related
-if not opt.disableFacile:
-    print("include FACILE")
-    process.hltHbherecopre = process.hltHbhereco.clone(
-        makeRecHits = cms.bool(False),
-        saveInfos = cms.bool(True),
-    )
-
-    from RecoLocalCalo.HcalRecProducers.facileHcalReconstructor_cfi import sonic_hbheprereco
-    process.hltHbhereco = sonic_hbheprereco.clone(
-        ChannelInfoName = cms.InputTag("hltHbherecopre")
-    )
-    
-    if opt.FacileCPU:
-        print("Running Facile on CPU server")
-        process.hltHbhereco.Client.port = cms.untracked.uint32(8021)
-
-    process.HLTDoLocalHcalSequence = cms.Sequence( process.hltHcalDigis + process.hltHbherecopre + process.hltHbhereco + process.hltHfprereco + process.hltHfreco + process.hltHoreco )
-    process.HLTStoppedHSCPLocalHcalReco = cms.Sequence( process.hltHcalDigis + process.hltHbherecopre + process.hltHbhereco)
-    process.hltHbhereco.Client.verbose = False
 
 # HCAL MAHI GPU code
 if opt.HCALGPU:
-    # opt.disableFacile has to be true (FACILE disabled), then MAHI GPU code can run
     print("include HCAL GPU Reconstruction")
     from HLTrigger.Configuration.customizeHLTforPatatrack import customiseHcalLocalReconstruction
 
